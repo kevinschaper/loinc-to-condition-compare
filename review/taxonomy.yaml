@@ -1,0 +1,142 @@
+# Error taxonomy for LOINC -> HP / MONDO associations.
+#
+# Derived from an open-coding pilot (review/pilot/): two reviewers each described the problems
+# in 44 items in their own words, giving 29 free-text themes that were merged into the codes
+# below. An item can carry several codes; the first is the primary one.
+#
+# The pilot also produced a "negated annotation used as positive" code. Negated and 0%-frequency
+# disease-phenotype edges are now excluded from the 2-hop inference in pipeline/03_build.sql, so
+# the code and the 24 reviewed pairs that carried it were dropped.
+groups:
+  - id: test
+    name: Test side
+    description: The LOINC code is not the measurement the claim treats it as.
+    codes:
+      - id: challenge_or_timed_test
+        name: Challenge or timed test read as baseline
+        definition: A post-stimulation, tolerance-test or timed code (glucose 2h post load, ACTH after insulin) inherits the baseline analyte's phenotype, though high or low on a dynamic test needs its own criteria.
+        pilot_themes: [challenge timepoint treated as baseline, challenge timepoint read as baseline, rules-out overreach from challenge test]
+      - id: specific_vs_class_analyte
+        name: Specific analyte equated with its class
+        definition: An antigen- or analyte-specific test (boysenberry IgE, gliadin IgA) is mapped to a class-level phenotype such as total immunoglobulin concentration.
+        pilot_themes: [specific antibody equated with total immunoglobulin, specific antibody as total immunoglobulin, mixed-allergen panel over-attributed]
+      - id: wrong_analyte
+        name: Wrong analyte
+        definition: The test measures something other than what the phenotype or disease claim is about.
+        pilot_themes: [wrong analyte class]
+      - id: specimen_mismatch
+        name: Specimen mismatch
+        definition: The specimen in the LOINC code (urine, CSF, red cells) differs from the one the phenotype names.
+        pilot_themes: [specimen mismatch]
+      - id: property_mismatch
+        name: Property or granularity mismatch
+        definition: The LOINC property does not fit the claim - a proportion read as an absolute count, a ratio, presence against quantity, or one narrow component standing for a whole test.
+        pilot_themes: [proportion vs absolute count, test component too granular]
+      - id: not_a_single_result
+        name: Code has no single result
+        definition: The code is a panel, a LOINC Part or an unspecified-challenge ("XXX") code, so a high, low or positive result is not defined for it.
+        pilot_themes: [relative finding as absolute direction]
+  - id: result
+    name: Result direction and thresholds
+    description: The result outcome named in the claim does not carry the stated meaning.
+    codes:
+      - id: direction_mismatch
+        name: Direction mismatch
+        definition: The result direction is the opposite of the phenotype's (a low result tied to an "Elevated X" term).
+        pilot_themes: []
+      - id: uninformative_direction
+        name: Direction without clinical meaning
+        definition: The direction has no pathological reading for this analyte (a low allergen-specific IgE), usually mapped to a nondirectional "Abnormal X" term.
+        pilot_themes: [clinically meaningless low direction]
+      - id: threshold_or_band_problem
+        name: Threshold or band problem
+        definition: The numeric bounds, reference population or band kind are wrong for the claim - critical limits used as a reference interval, a relative finding stated as absolute.
+        pilot_themes: [critical limits used as reference band, relative finding as absolute direction]
+  - id: term
+    name: Target term
+    description: The HP or MONDO term is the wrong one for what the test shows.
+    codes:
+      - id: term_too_general
+        name: Term too general
+        definition: A more specific term exists and fits; the chosen one is a parent or near-root class.
+        pilot_themes: [object term too general, overly general phenotype bridge]
+      - id: term_too_specific
+        name: Term too specific
+        definition: The term claims more than the test can show (a subtype, a cause, a stage).
+        pilot_themes: [disease stage vs infection mismatch]
+      - id: wrong_term
+        name: Unrelated term
+        definition: The term is on the wrong axis altogether.
+        pilot_themes: [test mapped to unrelated broad phenotype]
+      - id: obsolete_identifier
+        name: Obsolete identifier
+        definition: The HP or MONDO term is obsolete, or the LOINC code is deprecated. Added after the review, from items the reviewers had coded "other".
+        pilot_themes: []
+  - id: relation
+    name: Relation strength
+    description: The test and term fit, but the relation between them is overstated or miscoded.
+    codes:
+      - id: overclaimed_exclusion
+        name: Rules-out too strong
+        definition: A normal or negative result is said to rule out a condition it only argues against.
+        pilot_themes: [rules-out too strong]
+      - id: overclaimed_indication
+        name: Indication too strong
+        definition: A risk marker, screening result or phenotyping measurement is stated as diagnostic.
+        pilot_themes: [risk marker stated as diagnosis, phenotyping test labeled diagnostic]
+      - id: relation_miscoded
+        name: Relation miscoded
+        definition: The relation or expected result is recorded in a way that says something other than intended - a pertinent negative coded as a biomarker.
+        pilot_themes: [pertinent negative coded as biomarker]
+      - id: vacuous_claim
+        name: Claim says nothing
+        definition: An "uninformative" or indeterminate band that asserts no association. Added after the review, from items the reviewers had coded "other".
+        pilot_themes: []
+  - id: disease_link
+    name: Disease link
+    description: The test-to-disease association is true only weakly, or not at all.
+    codes:
+      - id: nonspecific_association
+        name: Nonspecific association
+        definition: The finding occurs in the disease but is shared by so many diseases that the link says little.
+        pilot_themes: [nonspecific low-yield phenotype link, uncommon or nonspecific disease feature]
+      - id: rare_feature
+        name: Rare or incidental feature
+        definition: The finding is uncommon or incidental in the disease.
+        pilot_themes: [uncommon or nonspecific disease feature]
+      - id: no_real_association
+        name: No real association
+        definition: The test has no recognised bearing on the disease.
+        pilot_themes: []
+  - id: inference
+    name: Inference and upstream data
+    description: Faults that arise from chaining edges or from the data being chained.
+    codes:
+      - id: upstream_annotation_doubtful
+        name: Upstream annotation doubtful
+        definition: The disease-phenotype annotation or its frequency looks wrong or rests on a single family.
+        pilot_themes: [questionable disease-phenotype annotation, unverifiable disease-phenotype annotation]
+      - id: identity_lost_in_chain
+        name: Identity lost in the chain
+        definition: The specific pathogen, allergen or analyte of the test is lost when the path goes through a general phenotype.
+        pilot_themes: [pathogen identity lost in bridge]
+  - id: other
+    name: Other
+    description: Anything the codes above do not cover.
+    codes:
+      - id: other
+        name: Other
+        definition: Describe it in error_note.
+        pilot_themes: []
+
+# Gaps the reviewers reported that have no code yet. Items with these were folded into the
+# nearest code, so those codes are broader in the data than their definitions read.
+known_gaps:
+  - gap: A band whose meaning depends on something the LOINC code does not carry (hours since ingestion, fasting state, assay platform, a companion result such as free T4, chronicity).
+    folded_into: [threshold_or_band_problem, term_too_specific, overclaimed_indication]
+  - gap: A severity grade or score that presupposes the diagnosis (Child-Pugh, NYHA, GOLD, MELD) read as evidence that the condition exists.
+    folded_into: [overclaimed_indication]
+  - gap: An underclaim, where a relation of "uninformative" is too weak.
+    folded_into: [other]
+  - gap: Both links of an inferred path failing at once; weak_link holds one value.
+    folded_into: [chaining]

@@ -1,0 +1,7 @@
+item_id	from_code	to_code	reason
+924ec8cf6b1f	other	obsolete_identifier	note names an obsolete HP term
+9f9197cb7980	other	obsolete_identifier	note names an obsolete HP term
+8f73836b77da	other	obsolete_identifier	note names a deprecated LOINC code
+4189ea4f47bf	other	obsolete_identifier	note names an obsolete MONDO term
+5f15cf7c9bdd	other	vacuous_claim	note calls it a null assertion
+449d7999f631	other	vacuous_claim	note calls the band uninformative by construction

@@ -1,0 +1,19 @@
+{
+  "name": "loinc-to-condition-compare",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf src/.observablehq/cache dist",
+    "build": "observable build",
+    "dev": "observable preview"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.13.4"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

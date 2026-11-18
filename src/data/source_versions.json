@@ -1,0 +1,19 @@
+{
+  "loinc2hpoAnnotation": {
+    "commit": "334abdc",
+    "date": "2023-06-05"
+  },
+  "bonobo": {
+    "commit": "b73ae55",
+    "date": "2026-11-13"
+  },
+  "dismech": {
+    "commit": "3a04f1f",
+    "date": "2026-11-17"
+  },
+  "monarch-kg": {
+    "id": "monarch-kg",
+    "version": "2026-11-11",
+    "generated_at": "2026-11-11T20:17:02Z"
+  }
+}
